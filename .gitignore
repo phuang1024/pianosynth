@@ -4,3 +4,7 @@ __pycache__
 *.mid
 *.midi
 *.wav
+
+/docs/_build
+/docs/_static
+/docs/_templates
