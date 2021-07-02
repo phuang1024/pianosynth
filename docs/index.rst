@@ -1,20 +1,10 @@
-.. PianoSynth documentation master file, created by
-   sphinx-quickstart on Fri Jul  2 12:15:44 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+PianoSynth
+==========
 
-Welcome to PianoSynth's documentation!
-======================================
+A piano synthesizer.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   soundprint
