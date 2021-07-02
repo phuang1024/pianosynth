@@ -21,4 +21,12 @@ import struct
 
 
 class SoundPrint:
-    pass
+    def __init__(self, path):
+        self.notes = {}
+
+        with open(path, "rb") as file:
+            num = struct.unpack("<I", file.read(4))[0]
+            for _ in range(num):
+                note, mode = file.read(2)
+                vol, freq = struct.unpack("ff", file.read(8))[0]
+                #TODO read note data
