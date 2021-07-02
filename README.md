@@ -1,2 +1,3 @@
-# pianosynth
-A piano synthesizer written in Python.
+# PianoSynth
+
+A piano synthesizer.
