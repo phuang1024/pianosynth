@@ -21,7 +21,17 @@ import os
 import argparse
 import struct
 import wave
+import mido
 import numpy as np
+
+
+def parse_midi(path):
+    messages = []
+    curr_time = 0
+    for msg in mido.MidiFile(path):
+        curr_time += msg.time
+        messages.append((curr_time, msg))
+    return messages
 
 
 def main():
