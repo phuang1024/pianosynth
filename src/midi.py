@@ -56,3 +56,4 @@ def note_vels(msgs, fps):
 
         if len(msgs) == 0 and not np.any(vels):
             break
+        frame += 1

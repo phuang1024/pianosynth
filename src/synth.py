@@ -31,6 +31,6 @@ def synthesize(fps, tuning, frame, vels, starts):
             pitch = pitch_lowest * 2**(i/12)
             fpc = fps / pitch   # Frames per sine wave cycle
             offset = elapse % fpc
-            value += math.sin(offset) * vel
+            value += math.sin(offset) * vel / 128
 
     return value
