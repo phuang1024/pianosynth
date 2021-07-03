@@ -19,28 +19,43 @@
 
 import os
 import argparse
+import struct
 import wave
+import midi
+import synth
+
+INT_MAX = 2 ** 31
 
 
 def main():
     parser = argparse.ArgumentParser(description="A piano synthesizer")
     parser.add_argument("-i", "--input", required=True, help="Input MIDI file.")
     parser.add_argument("-o", "--output", required=True, help="Output .wav file path.")
+    parser.add_argument("-s", "--soundprint", required=True, help="SoundPrint file.")
+    parser.add_argument("-t", "--tuning", type=float, help="Frequency of A4 (default 441)", default=441)
+    parser.add_argument("-v", "--volume", type=float, help="Volume multiplier", default=1)
     args = parser.parse_args()
 
-    assert args.output.endswith(".wav"), "Output file must end with .wav"
-    assert args.input.endswith((".mid", ".midi")), "Input file must end with .mid or .midi"
     if os.path.isfile(args.output) and \
             input(f"Output {args.output} exists. Overwrite? [y/N] ").lower().strip() != "y":
         return
 
     fps = 44100
+    msgs = midi.parse_midi(args.input, fps)
 
     audio: wave.Wave_write   # Type hinting
     with wave.open(args.output, "w") as audio:
         audio.setnchannels(1)
         audio.setsampwidth(4)   # 32 bit audio
         audio.setframerate(fps)
+
+        for i, (vels, starts) in enumerate(midi.note_vels(msgs, fps)):
+            value = synth.synthesize(fps, args.tuning, i, vels, starts)
+            value = int(value*INT_MAX*args.volume/4)
+            audio.writeframesraw(struct.pack("<i", value))
+
+            if i % fps == 0:
+                print(i//fps)
 
 
 main()
