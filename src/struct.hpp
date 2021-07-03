@@ -21,12 +21,23 @@
 
 
 namespace Struct {
-    void w_int8(std::ofstream& stream, const char& value);
-    void w_uint8(std::ofstream& stream, const unsigned char& value);
-    void w_int16(std::ofstream& stream, const short& value);
-    void w_uint16(std::ofstream& stream, const unsigned short& value);
-    void w_int32(std::ofstream& stream, const int& value);
-    void w_uint32(std::ofstream& stream, const unsigned int& value);
-    void w_int64(std::ofstream& stream, const long long& value);
-    void w_uint64(std::ofstream& stream, const unsigned long long& value);
+    // Endianness
+    const bool LE = false;
+    const bool BE = true;
+
+    // Types
+    const unsigned char INT8    = 0;
+    const unsigned char INT16   = 1;
+    const unsigned char INT32   = 2;
+    const unsigned char INT64   = 3;
+    const unsigned char FLOAT32 = 4;
+    const unsigned char FLOAT64 = 5;
+
+    // Sign
+    const bool UNSIGNED = false;
+    const bool SIGNED   = true;
+
+    // Conversions and internal functions
+    unsigned char buflen(const unsigned char&);
+    void* numptr(const unsigned char&);
 }

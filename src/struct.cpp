@@ -22,12 +22,29 @@
 
 
 namespace Struct {
-    void w_int8(std::ofstream& stream, const char& value)                 {stream.write((char*)&value, 1);}
-    void w_uint8(std::ofstream& stream, const unsigned char& value)       {stream.write((char*)&value, 1);}
-    void w_int16(std::ofstream& stream, const short& value)               {stream.write((char*)&value, 2);}
-    void w_uint16(std::ofstream& stream, const unsigned short& value)     {stream.write((char*)&value, 2);}
-    void w_int32(std::ofstream& stream, const int& value)                 {stream.write((char*)&value, 4);}
-    void w_uint32(std::ofstream& stream, const unsigned int& value)       {stream.write((char*)&value, 4);}
-    void w_int64(std::ofstream& stream, const long long& value)           {stream.write((char*)&value, 8);}
-    void w_uint64(std::ofstream& stream, const unsigned long long& value) {stream.write((char*)&value, 8);}
+    unsigned char buflen(const unsigned char& type) {
+        switch (type) {
+            case (INT8):    return 1;
+            case (INT16):   return 2;
+            case (INT32):   return 4;
+            case (INT64):   return 8;
+            case (FLOAT32): return 4;
+            case (FLOAT64): return 8;
+            default:        return 1;
+        }
+    }
+
+    void* numptr(const unsigned char& type) {
+        void* ptr = nullptr;
+        switch (type) {
+            case (INT8):    char      x; ptr = &x; break;
+            case (INT16):   short     x; ptr = &x; break;
+            case (INT32):   int       x; ptr = &x; break;
+            case (INT64):   long long x; ptr = &x; break;
+            case (FLOAT32): float     x; ptr = &x; break;
+            case (FLOAT64): double    x; ptr = &x; break;
+            default:        char      x; ptr = &x; break;
+        }
+        return ptr;
+    }
 }
