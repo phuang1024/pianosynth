@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <iostream>
 #include <fstream>
 #include "struct.hpp"
 
@@ -34,17 +35,31 @@ namespace Struct {
         }
     }
 
-    void* numptr(const UCH& type) {
+    void* numptr(const UCH& type, const bool& sign) {
         void* ptr = nullptr;
-        switch (type) {
-            case (INT8):    {char      x; ptr = &x; break;}
-            case (INT16):   {short     x; ptr = &x; break;}
-            case (INT32):   {int       x; ptr = &x; break;}
-            case (INT64):   {long long x; ptr = &x; break;}
-            case (FLOAT32): {float     x; ptr = &x; break;}
-            case (FLOAT64): {double    x; ptr = &x; break;}
-            default:        {char      x; ptr = &x; break;}
+        if (sign) {
+            switch (type) {
+                case (INT8):    {char      x; ptr = &x; break;}
+                case (INT16):   {short     x; ptr = &x; break;}
+                case (INT32):   {int       x; ptr = &x; break;}
+                case (INT64):   {long long x; ptr = &x; break;}
+                case (FLOAT32): {float     x; ptr = &x; break;}
+                case (FLOAT64): {double    x; ptr = &x; break;}
+                default:        {char      x; ptr = &x; break;}
+            }
+        } else {
+            switch (type) {
+                case (INT8):    {unsigned char      x; ptr = &x; break;}
+                case (INT16):   {unsigned short     x; ptr = &x; break;}
+                case (INT32):   {unsigned int       x; ptr = &x; break;}
+                case (INT64):   {unsigned long long x; ptr = &x; break;}
+                case (FLOAT32): {         float     x; ptr = &x; break;}
+                case (FLOAT64): {         double    x; ptr = &x; break;}
+                default:        {unsigned char      x; ptr = &x; break;}
+            }
         }
+        //TODO fix floats
+        if ((type == FLOAT32) || (type == FLOAT64)) std::cout << "FLOATS ARE STILL BUGGY" << std::endl;
         return ptr;
     }
 
@@ -57,11 +72,11 @@ namespace Struct {
     void* unpack(const char* buffer, const bool endian, const bool sign, const UCH type) {
         const bool direction = (endianness() == endian);   // true = in order, false = in reverse order
         const UCH len = buflen(type);
-        void* ptr = numptr(type);
+        void* ptr = numptr(type, sign);
 
         for (UCH i = 0; i < len; i++) {
-            const UCH offset = (direction ? i : (len-i));
-            char* byte = (char*)(ptr + offset);
+            const UCH offset = (direction ? i : (len-i-1));
+            char* byte = ((char*)ptr + offset);
             *byte = buffer[i];
         }
 

@@ -40,11 +40,6 @@ namespace Struct {
     const UCH FLOAT32 = 4;
     const UCH FLOAT64 = 5;
 
-    // Conversions and internal functions
-    UCH buflen(const UCH&);
-    void* numptr(const UCH&);
-    bool endianness();
-
     // Functions that the user should use
     void* unpack(const char*, const bool, const bool, const UCH);
     void* unpacks(std::ifstream&, const bool, const bool, const UCH);
