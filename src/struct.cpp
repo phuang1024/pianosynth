@@ -22,7 +22,7 @@
 
 
 namespace Struct {
-    unsigned char buflen(const unsigned char& type) {
+    UCH buflen(const UCH& type) {
         switch (type) {
             case (INT8):    return 1;
             case (INT16):   return 2;
@@ -34,17 +34,44 @@ namespace Struct {
         }
     }
 
-    void* numptr(const unsigned char& type) {
+    void* numptr(const UCH& type) {
         void* ptr = nullptr;
         switch (type) {
-            case (INT8):    char      x; ptr = &x; break;
-            case (INT16):   short     x; ptr = &x; break;
-            case (INT32):   int       x; ptr = &x; break;
-            case (INT64):   long long x; ptr = &x; break;
-            case (FLOAT32): float     x; ptr = &x; break;
-            case (FLOAT64): double    x; ptr = &x; break;
-            default:        char      x; ptr = &x; break;
+            case (INT8):    {char      x; ptr = &x; break;}
+            case (INT16):   {short     x; ptr = &x; break;}
+            case (INT32):   {int       x; ptr = &x; break;}
+            case (INT64):   {long long x; ptr = &x; break;}
+            case (FLOAT32): {float     x; ptr = &x; break;}
+            case (FLOAT64): {double    x; ptr = &x; break;}
+            default:        {char      x; ptr = &x; break;}
         }
         return ptr;
+    }
+
+    bool endianness() {
+        const short x = 1;
+        const char  b1 = *((char*)&x);
+        return (b1 == 0) ? BE : LE;
+    }
+
+    void* unpack(const char* buffer, const bool endian, const bool sign, const UCH type) {
+        const bool direction = (endianness() == endian);   // true = in order, false = in reverse order
+        const UCH len = buflen(type);
+        void* ptr = numptr(type);
+
+        for (UCH i = 0; i < len; i++) {
+            const UCH offset = (direction ? i : (len-i));
+            char* byte = (char*)(ptr + offset);
+            *byte = buffer[i];
+        }
+
+        return ptr;
+    }
+
+    void* unpacks(std::ifstream& stream, const bool endian, const bool sign, const UCH type) {
+        const UCH len = buflen(type);
+        char buffer[8];
+        stream.read(buffer, len);
+        return unpack(buffer, endian, sign, type);
     }
 }

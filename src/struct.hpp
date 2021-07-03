@@ -21,23 +21,31 @@
 
 
 namespace Struct {
+    typedef  unsigned char       UCH;
+    typedef  unsigned long long  ULL;
+
     // Endianness
     const bool LE = false;
     const bool BE = true;
-
-    // Types
-    const unsigned char INT8    = 0;
-    const unsigned char INT16   = 1;
-    const unsigned char INT32   = 2;
-    const unsigned char INT64   = 3;
-    const unsigned char FLOAT32 = 4;
-    const unsigned char FLOAT64 = 5;
 
     // Sign
     const bool UNSIGNED = false;
     const bool SIGNED   = true;
 
+    // Types
+    const UCH INT8    = 0;
+    const UCH INT16   = 1;
+    const UCH INT32   = 2;
+    const UCH INT64   = 3;
+    const UCH FLOAT32 = 4;
+    const UCH FLOAT64 = 5;
+
     // Conversions and internal functions
-    unsigned char buflen(const unsigned char&);
-    void* numptr(const unsigned char&);
+    UCH buflen(const UCH&);
+    void* numptr(const UCH&);
+    bool endianness();
+
+    // Functions that the user should use
+    void* unpack(const char*, const bool, const bool, const UCH);
+    void* unpacks(std::ifstream&, const bool, const bool, const UCH);
 }
