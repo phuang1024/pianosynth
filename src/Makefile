@@ -17,5 +17,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-all:
-	g++ -Wall -O3 main.cpp -o pianosynth
+FILES = main.cpp midi.cpp struct.cpp
+.PHONY: compile clean
+
+all: compile clean
+
+compile: $(FILES)
+	g++ -std=c++17 -Wall -O3 -o pianosynth $(FILES)
+
+clean:
+	rm *.o
