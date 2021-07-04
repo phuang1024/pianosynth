@@ -12,4 +12,4 @@ __pycache__
 /docs/_static
 /docs/_templates
 
-/src/pianosynth
+/src/psynth_cpp
