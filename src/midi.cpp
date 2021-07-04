@@ -24,23 +24,45 @@
 #include "midi.hpp"
 #include "struct.hpp"
 
+using Struct::BE;
+using Struct::LE;
+
+using Struct::SIGNED;
+using Struct::UNSIGNED;
+
+using Struct::INT8;
+using Struct::INT16;
+using Struct::INT32;
+using Struct::INT64;
+using Struct::FLOAT32;
+using Struct::FLOAT64;
+
 
 namespace Midi {
     void loads(MidiFile& mid, std::ifstream& stream) {
-        char header[4];
-        stream.read(header, 4);  // Read MThd
+        // Read "MThd"
+        stream.seekg(4, std::ios::beg);
 
-        const UINT meta_len = *(int*)Struct::unpacks(stream, Struct::BE, Struct::UNSIGNED, Struct::INT32);
-        mid.type           = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
-        mid.num_tracks     = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
-        mid.ticks_per_beat = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
+        // Read metadata
+        const UINT meta_len = *(int*)Struct::unpacks(stream, BE, UNSIGNED, INT32);
+        mid.type           = *(short*)Struct::unpacks(stream, BE, SIGNED, INT16);
+        mid.num_tracks     = *(short*)Struct::unpacks(stream, BE, SIGNED, INT16);
+        mid.ticks_per_beat = *(short*)Struct::unpacks(stream, BE, SIGNED, INT16);
         stream.seekg(meta_len-6, std::ios::cur);
 
+        // Read tracks
         mid.tracks = new MidiTrack [mid.num_tracks];
+        for (UINT i = 0; i < mid.num_tracks; i++) {
+            // Read "MTrk"
+            stream.seekg(4, std::ios::cur);
+
+            const UINT size = *(int*)Struct::unpacks(stream, BE, UNSIGNED, INT32);
+            while (true) {}
+        }
     }
 
     void loadf(MidiFile& mid, const char* path) {
         std::ifstream stream(path);
-        return loads(mid, stream);
+        loads(mid, stream);
     }
 }
