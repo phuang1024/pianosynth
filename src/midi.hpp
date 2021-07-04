@@ -32,11 +32,11 @@ struct MidiFile {
     UINT num_tracks;
     UINT ticks_per_beat;
 
-    MidiTrack* tracks;
+    MidiTrack** tracks;
 };
 
 
 namespace Midi {
-    void loads(MidiFile&, std::ifstream&);
-    void loadf(MidiFile&, const char*);
+    void loads(MidiFile*, std::ifstream&);
+    void loadf(MidiFile*, const char*);
 }
