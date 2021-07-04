@@ -39,6 +39,17 @@ using Struct::FLOAT64;
 
 
 namespace Midi {
+    ULL read_int(std::ifstream& stream) {
+        ULL value = 0;
+        while (true) {
+            char byte;
+            stream.read(&byte, 1);
+
+            if ((byte&128) == 0) return value;
+            value = (value<<7) + (byte&127);
+        }
+    }
+
     void loads(MidiFile& mid, std::ifstream& stream) {
         // Read "MThd"
         stream.seekg(4, std::ios::beg);
