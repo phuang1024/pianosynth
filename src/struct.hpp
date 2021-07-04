@@ -19,11 +19,12 @@
 
 #include <fstream>
 
+typedef  unsigned char       UCH;
+typedef  unsigned int        UINT;
+typedef  unsigned long long  ULL;
+
 
 namespace Struct {
-    typedef  unsigned char       UCH;
-    typedef  unsigned long long  ULL;
-
     // Endianness
     const bool LE = false;
     const bool BE = true;
