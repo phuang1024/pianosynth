@@ -23,7 +23,7 @@ FILES = main.o midi.o struct.o
 all: compile clean
 
 compile: $(FILES)
-	g++ -std=c++17 -Wall -O3 -o pianosynth $(FILES)
+	g++ -std=c++17 -Wall -O3 -o psynth_cpp $(FILES)
 
 clean:
 	rm *.o
