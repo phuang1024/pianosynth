@@ -77,6 +77,7 @@ namespace Struct {
         for (UCH i = 0; i < len; i++) {
             const UCH offset = (direction ? i : (len-i-1));
             char* byte = ((char*)ptr + offset);
+            std::cout << +(*byte) << std::endl;
             *byte = buffer[i];
         }
 

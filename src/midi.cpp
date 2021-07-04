@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <iostream>
 #include <fstream>
 #include <cassert>
 #include <cstring>
@@ -29,10 +30,10 @@ namespace Midi {
         char header[4];
         stream.read(header, 4);  // Read MThd
 
-        const UINT meta_len  = *(int*) Struct::unpacks(stream, Struct::BE, Struct::UNSIGNED, Struct::INT32);
-        mid.type           = *(char*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED,   Struct::INT16);
-        mid.num_tracks     = *(char*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED,   Struct::INT16);
-        mid.ticks_per_beat = *(char*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED,   Struct::INT16);
+        const UINT meta_len = *(int*)Struct::unpacks(stream, Struct::BE, Struct::UNSIGNED, Struct::INT32);
+        mid.type           = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
+        mid.num_tracks     = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
+        mid.ticks_per_beat = *(short*)Struct::unpacks(stream, Struct::BE, Struct::SIGNED, Struct::INT16);
         stream.seekg(meta_len-6, std::ios::cur);
 
         mid.tracks = new MidiTrack [mid.num_tracks];
