@@ -45,6 +45,15 @@ def main():
     msgs = parse_midi(args.input, fps)
 
     proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc.stdin.write(str(len(msgs)).encode())
+    proc.stdin.write(b"\n")
+    for t, msg in msgs:
+        if msg.type in ("note_on", "note_off"):
+            vel = 0 if msg.type == "note_off" else msg.velocity
+            proc.stdin.write(str(int(t*fps)).encode())
+            proc.stdin.write(b" ")
+            proc.stdin.write(str(vel).encode())
+            proc.stdin.write(b"\n")
 
 
 main()
