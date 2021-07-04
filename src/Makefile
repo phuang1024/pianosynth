@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FILES = main.o midi.o struct.o
+FILES = main.o
 .PHONY: compile clean
 
 all: compile clean
