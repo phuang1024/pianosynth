@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <cmath>
+#include "wave.hpp"
 
 using std::cin;
 using std::cout;
@@ -86,6 +87,7 @@ void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const
                 value += sin(offset*pi*2) * vel / 128;
             }
         }
+        //TODO write into wave file here
         cout << (int)(value*volume*INT_MAX) << std::endl;
 
         // for (double& vel: velocities) {

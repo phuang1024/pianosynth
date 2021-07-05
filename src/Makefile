@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FILES = main.o
+FILES = main.o wave.o
 .PHONY: compile clean
 
 all: compile clean
