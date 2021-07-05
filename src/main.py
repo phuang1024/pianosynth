@@ -18,6 +18,7 @@
 #
 
 import os
+import signal
 import subprocess
 import argparse
 import mido
@@ -36,6 +37,8 @@ def parse_midi(path, fps):
 
 
 def main():
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
     parser = argparse.ArgumentParser(description="A piano synthesizer")
     parser.add_argument("-i", "--input", required=True, help="Input MIDI file.")
     parser.add_argument("-o", "--output", required=True, help="Output Wave file.")
@@ -43,17 +46,17 @@ def main():
 
     fps = 44100
     msgs = parse_midi(args.input, fps)
+    num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    proc.stdin.write(str(len(msgs)).encode())
-    proc.stdin.write(b"\n")
-    for t, msg in msgs:
+    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE)#, stdout=subprocess.PIPE)
+    proc.stdin.write(f"{num_good}\n".encode())
+    for i, (t, msg) in enumerate(msgs):
         if msg.type in ("note_on", "note_off"):
-            vel = 0 if msg.type == "note_off" else msg.velocity
-            proc.stdin.write(str(int(t*fps)).encode())
-            proc.stdin.write(b" ")
-            proc.stdin.write(str(vel).encode())
-            proc.stdin.write(b"\n")
+            print("SEnding", i, msg)
+            proc.stdin.write(f"{t}\n".encode())
+            proc.stdin.write(f"{msg.note}\n".encode())
+            proc.stdin.write(f"{msg.velocity}\n".encode())
+    proc.stdin.flush()
 
 
 main()

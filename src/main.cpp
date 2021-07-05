@@ -28,17 +28,20 @@ typedef  unsigned int   UINT;
 
 struct Message {
     UINT frame;
+    UINT note;
     UINT velocity;
 };
 
 
 void read_msgs(Message* msgs, const UINT num_msgs) {
     for (UINT i = 0; i < num_msgs; i++) {
-        UINT frame, vel;
-        cin >> frame >> vel;
+        UINT frame, note, vel;
+        cin >> frame >> note >> vel;
+        cout << std::endl;
 
         Message msg;
         msg.frame = frame;
+        msg.note = note;
         msg.velocity = vel;
         msgs[i] = msg;
     }
