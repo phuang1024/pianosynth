@@ -17,7 +17,11 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#define  INT_MAX  2147483648
+#define  pi       3.14159265358979
+
 #include <iostream>
+#include <cmath>
 
 using std::cin;
 using std::cout;
@@ -48,10 +52,23 @@ void read_msgs(Message* msgs, const UINT num_msgs) {
 }
 
 
-int main() {
+void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps) {
+    // Sine wave test for now
+    for (UINT i = 0; i < fps*2; i++) {
+        const int v = INT_MAX * sin((double)i/200*2*pi) / 2;
+        cout << v << std::endl;
+    }
+    cout << "DONE" << std::endl;
+}
+
+
+int main(const int argc, const char** argv) {
+    const UINT fps = std::stoi(argv[1]);
+
     UINT num_msgs;
     cin >> num_msgs;
-
     Message* msgs = new Message [num_msgs];
+
     read_msgs(msgs, num_msgs);
+    write_audio(msgs, num_msgs, fps);
 }

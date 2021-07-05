@@ -51,9 +51,9 @@ def main():
     msgs = parse_midi(args.input, fps)
     num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp"), str(fps)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.stdin.write(f"{num_good}\n".encode())
-    for i, (t, msg) in enumerate(msgs):
+    for t, msg in msgs:
         if msg.type in ("note_on", "note_off"):
             proc.stdin.write(f"{t}\n".encode())
             proc.stdin.write(f"{msg.note}\n".encode())
@@ -65,13 +65,15 @@ def main():
         file.setnchannels(1)
         file.setsampwidth(4)
 
-        while proc.poll() is None:
-            data = proc.stdout.read(4)
-            if len(data) < 4:
-                proc.stdout.seek(-len(data), os.SEEK_CUR)
-                time.sleep(0.01)
+        while True:
+            data = proc.stdout.readline().decode().strip()
+            if data == "DONE" or proc.poll() is not None:
+                break
+            if not data.isdigit():
                 continue
-            file.writeframesraw(data)
+
+            buffer = struct.pack("<i", int(data))
+            file.writeframesraw(buffer)
 
 
 main()
