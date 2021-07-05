@@ -18,8 +18,11 @@
 #
 
 import os
+import time
 import signal
+import struct
 import subprocess
+import wave
 import argparse
 import mido
 
@@ -48,15 +51,27 @@ def main():
     msgs = parse_midi(args.input, fps)
     num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE)#, stdout=subprocess.PIPE)
+    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.stdin.write(f"{num_good}\n".encode())
     for i, (t, msg) in enumerate(msgs):
         if msg.type in ("note_on", "note_off"):
-            print("SEnding", i, msg)
             proc.stdin.write(f"{t}\n".encode())
             proc.stdin.write(f"{msg.note}\n".encode())
             proc.stdin.write(f"{msg.velocity}\n".encode())
     proc.stdin.flush()
+
+    with wave.Wave_write(args.output) as file:
+        file.setframerate(fps)
+        file.setnchannels(1)
+        file.setsampwidth(4)
+
+        while proc.poll() is None:
+            data = proc.stdout.read(4)
+            if len(data) < 4:
+                proc.stdout.seek(-len(data), os.SEEK_CUR)
+                time.sleep(0.01)
+                continue
+            file.writeframesraw(data)
 
 
 main()
