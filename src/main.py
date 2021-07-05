@@ -18,7 +18,6 @@
 #
 
 import os
-import time
 import signal
 import struct
 import subprocess
@@ -26,7 +25,14 @@ import wave
 import argparse
 import mido
 
+INT_MIN = -2147483648
+INT_MAX = 2147483647
+
 PARENT = os.path.dirname(os.path.realpath(__file__))
+
+
+def bounds(v, vmin, vmax):
+    return max(min(v, vmax), vmin)
 
 
 def parse_midi(path, fps):
@@ -45,13 +51,15 @@ def main():
     parser = argparse.ArgumentParser(description="A piano synthesizer")
     parser.add_argument("-i", "--input", required=True, help="Input MIDI file.")
     parser.add_argument("-o", "--output", required=True, help="Output Wave file.")
+    parser.add_argument("-t", "--tuning", type=int, default=441, help="Frequency of A4.")
+    parser.add_argument("-v", "--volume", type=float, default=0.5, help="Volume multiplier.")
     args = parser.parse_args()
 
     fps = 44100
     msgs = parse_midi(args.input, fps)
     num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp"), str(fps)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp"), str(fps), str(args.tuning), str(args.volume)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.stdin.write(f"{num_good}\n".encode())
     for t, msg in msgs:
         if msg.type in ("note_on", "note_off"):
@@ -67,13 +75,15 @@ def main():
 
         while True:
             data = proc.stdout.readline().decode().strip()
-            if data == "DONE" or proc.poll() is not None:
+            if proc.poll() is not None:
                 break
-            if not data.isdigit():
-                continue
 
-            buffer = struct.pack("<i", int(data))
-            file.writeframesraw(buffer)
+            try:
+                samp = bounds(int(data), INT_MIN, INT_MAX)
+                buffer = struct.pack("<i", samp)
+                file.writeframesraw(buffer)
+            except ValueError:
+                pass
 
 
 main()
