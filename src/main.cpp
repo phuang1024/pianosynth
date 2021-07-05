@@ -23,7 +23,6 @@
 #define  VEL_THRES  1
 
 #include <iostream>
-#include <fstream>
 #include <cmath>
 
 using std::cin;
@@ -57,7 +56,7 @@ void read_msgs(Message* msgs, const UINT num_msgs) {
 
 void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const double tuning, const double volume) {
     const double pitch_lowest = tuning / 16;
-    const double vol_fac = pow(0.75, 1.0/fps);
+    const double vol_fac = pow(0.5, 1.0/fps);
 
     UINT   next_msg = 0;
     UINT   starts[88];
@@ -87,11 +86,10 @@ void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const
                 value += sin(offset*pi*2) * vel / 128;
             }
         }
-        value = value * volume;
-        cout << (int)(value*INT_MAX) << std::endl;
+        cout << (int)(value*volume*INT_MAX) << std::endl;
 
         // for (double& vel: velocities) {
-        //     vel *= vol_fac;
+        //     vel = vel*vol_fac;
         //     if (vel < VEL_THRES) vel = 0;
         // }
 
