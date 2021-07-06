@@ -22,14 +22,20 @@
 #include <fstream>
 #include <string>
 
+typedef  unsigned char  UCH;
+typedef  unsigned int   UINT;
+
 
 class Wave {
 public:
     ~Wave();
     Wave(const std::string);
 
+    void close();
+
 private:
     void _write_header();
 
     std::ofstream* _file;
+    UINT _frames_written;
 };

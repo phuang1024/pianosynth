@@ -18,22 +18,21 @@
 //
 
 #include <fstream>
-#include <string>
-#include <cstring>
 #include "wave.hpp"
-
-typedef  unsigned char  UCH;
-typedef  unsigned int   UINT;
 
 
 Wave::~Wave() {
-    _file->close();
 }
 
 Wave::Wave(const std::string fname) {
     std::ofstream file(fname);
     _file = &file;
+    _frames_written = 0;
+}
+
+void Wave::close() {
     _write_header();
+    _file->close();
 }
 
 void Wave::_write_header() {
