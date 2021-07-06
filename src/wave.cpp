@@ -31,7 +31,8 @@ Wave::~Wave() {
 }
 
 Wave::Wave(const std::string fname) {
-    _file = &std::ofstream(fname);
+    std::ofstream file(fname);
+    _file = &file;
     _write_header();
 }
 

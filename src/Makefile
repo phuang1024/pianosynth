@@ -17,13 +17,17 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+CXX = g++
 FILES = main.o wave.o
+OUTPUT = psynth_cpp
+C_FLAGS = -std=c++17 -Wall -O3 -o $(OUTPUT)
+
 .PHONY: compile clean
 
 all: compile clean
 
 compile: $(FILES)
-	g++ -std=c++17 -Wall -O3 -o psynth_cpp $(FILES)
+	$(CXX) $(C_FLAGS) $(FILES)
 
 clean:
 	rm *.o
