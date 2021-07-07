@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <string>
 #include "wave.hpp"
 
 using std::cin;
@@ -44,7 +45,6 @@ void read_msgs(Message* msgs, const UINT num_msgs) {
     for (UINT i = 0; i < num_msgs; i++) {
         UINT frame, note, vel;
         cin >> frame >> note >> vel;
-        cout << std::endl;
 
         Message msg;
         msg.frame = frame;
@@ -55,12 +55,13 @@ void read_msgs(Message* msgs, const UINT num_msgs) {
 }
 
 
-void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const double tuning, const double volume) {
+void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UINT fps,
+        const double tuning, const double volume) {
     const double pitch_lowest = tuning / 16;
     const double vol_fac = pow(0.5, 1.0/fps);
 
-    UINT   next_msg = 0;
-    UINT   starts[88];
+    UINT next_msg = 0;
+    UINT starts[88];
     double velocities[88];
     for (UINT i = 0; i < 88; i++)
         velocities[i] = 0;
@@ -87,8 +88,8 @@ void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const
                 value += sin(offset*pi*2) * vel / 128;
             }
         }
-        //TODO write into wave file here
-        cout << (int)(value*volume*INT_MAX) << std::endl;
+        const int samp = value*volume*INT_MAX;
+        wave.writeframe(samp);
 
         // for (double& vel: velocities) {
         //     vel = vel*vol_fac;
@@ -103,23 +104,29 @@ void write_audio(const Message* msgs, const UINT num_msgs, const UINT fps, const
                     break;
                 }
             }
-            if (all_zero) break;
+            if (all_zero)
+                break;
         }
 
         frame++;
     }
+
+    wave.close();
 }
 
 
 int main(const int argc, const char** argv) {
-    const UINT fps = std::stoi(argv[1]);
-    const double tuning = std::stod(argv[2]);
-    const double volume = std::stod(argv[3]);
+    const std::string fname = argv[1];
+    const UINT fps = std::stoi(argv[2]);
+    const double tuning = std::stod(argv[3]);
+    const double volume = std::stod(argv[4]);
 
     UINT num_msgs;
     cin >> num_msgs;
+
     Message* msgs = new Message [num_msgs];
+    Wave wave(fname, fps);
 
     read_msgs(msgs, num_msgs);
-    write_audio(msgs, num_msgs, fps, tuning, volume);
+    write_audio(wave, msgs, num_msgs, fps, tuning, volume);
 }

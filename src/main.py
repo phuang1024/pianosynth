@@ -17,11 +17,10 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import sys
 import os
 import signal
-import struct
 import subprocess
-import wave
 import argparse
 import mido
 
@@ -59,7 +58,8 @@ def main():
     msgs = parse_midi(args.input, fps)
     num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc = subprocess.Popen([os.path.join(PARENT, "psynth_cpp"), str(fps), str(args.tuning), str(args.volume)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc_args = [os.path.join(PARENT, "psynth_cpp"), args.output, str(fps), str(args.tuning), str(args.volume)]
+    proc = subprocess.Popen(proc_args, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr)
     proc.stdin.write(f"{num_good}\n".encode())
     for t, msg in msgs:
         if msg.type in ("note_on", "note_off"):
@@ -67,23 +67,7 @@ def main():
             proc.stdin.write(f"{msg.note}\n".encode())
             proc.stdin.write(f"{msg.velocity}\n".encode())
     proc.stdin.flush()
-
-    with wave.Wave_write(args.output) as file:
-        file.setframerate(fps)
-        file.setnchannels(1)
-        file.setsampwidth(4)
-
-        while True:
-            data = proc.stdout.readline().decode().strip()
-            if proc.poll() is not None:
-                break
-
-            try:
-                samp = bounds(int(data), INT_MIN, INT_MAX)
-                buffer = struct.pack("<i", samp)
-                file.writeframesraw(buffer)
-            except ValueError:
-                pass
+    proc.wait()
 
 
 main()
