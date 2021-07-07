@@ -32,6 +32,7 @@ public:
     ~Wave();
     Wave(const std::string, const UINT);
 
+    void writeframe(const UINT);
     void close();
 
 private:

@@ -21,6 +21,8 @@
 #include "wave.hpp"
 
 
+// TODO endianness, i.e. swap endian dependent on machine endianness.
+
 void write_uint(std::ofstream* stream, const UINT v) {
     stream->write((char*)&v, sizeof(UINT));
 }
@@ -39,12 +41,21 @@ Wave::~Wave() {
 
 Wave::Wave(const std::string fname, const UINT fps) {
     std::ofstream file(fname);
+
     _file = &file;
     _nframes = 0;
 
     _fps = fps;
     _sampwidth = 4;
     _nchannels = 1;
+
+    _file->seekp(40, std::ios::beg);
+}
+
+void Wave::writeframe(const UINT samp) {
+    const char* ptr = (char*)&samp;
+    _file->write(ptr, _sampwidth);
+    _nframes++;
 }
 
 void Wave::close() {
@@ -53,6 +64,8 @@ void Wave::close() {
 }
 
 void Wave::_write_header() {
+    _file->seekp(0, std::ios::beg);
+
     write_str(_file, "RIFF", 4);
     write_uint(_file, 36 + _nframes*_nchannels*_sampwidth);
     write_str(_file, "WAVE", 4);
