@@ -19,7 +19,7 @@
 
 CXX = g++
 FILES = main.o progress.o synth.o wave.o
-OUTPUT = psynth_cpp
+OUTPUT = .psynth
 C_FLAGS = -std=c++17 -Wall -O3 -o $(OUTPUT)
 
 .PHONY: compile clean

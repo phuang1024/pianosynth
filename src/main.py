@@ -58,7 +58,7 @@ def main():
     msgs = parse_midi(args.input, fps)
     num_good = len(list(filter((lambda m: m[1].type in ("note_on", "note_off")), msgs)))
 
-    proc_args = [os.path.join(PARENT, "psynth_cpp"), args.output, str(fps), str(args.tuning), str(args.volume)]
+    proc_args = [os.path.join(PARENT, ".psynth"), args.output, str(fps), str(args.tuning), str(args.volume)]
     proc = subprocess.Popen(proc_args, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr)
     proc.stdin.write(f"{num_good}\n".encode())
     for t, msg in msgs:
