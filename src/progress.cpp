@@ -18,10 +18,12 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include <chrono>
 #include <string>
 #include "progress.hpp"
 
+using std::cout;
 using std::string;
 using std::to_string;
 
@@ -32,6 +34,24 @@ string num_str(const double n) {
     else if (n < 1e9)  return to_string(n/1e6)  + "M";
     else if (n < 1e12) return to_string(n/1e9)  + "B";
     else               return to_string(n/1e12) + "T";
+}
+
+
+string time_str(const double time) {
+    const UINT hours = time / 3600;
+    const UINT mins = fmod(time, 3600) / 60;
+    const UINT secs = fmod(time, 60);
+    const double milsecs = fmod(time, 1);
+
+    string str;
+    str += to_string(hours);
+    str += ":";
+    str += to_string(mins);
+    str += ":";
+    str += to_string(secs);
+    str += ".";
+    str += to_string(milsecs).substr(2, 3);
+    return str;
 }
 
 
@@ -47,8 +67,11 @@ namespace Progress {
         const double fps = (double)written / elapse;
         const double fac = fps / audio_fps;
 
-        std::cout << "\r";
-        std::cout << "frame=" << num_str(written) << "  fps=" << num_str(fps) << "  speed=" << num_str(fac) << "x";
-        std::cout << std::flush;
+        cout << "\r";
+        cout << "frame=" << num_str(written);
+        cout << "  fps=" << num_str(fps);
+        cout << "  speed=" << num_str(fac) << "x";
+        cout << "  time=" << time_str(elapse);
+        cout << std::flush;
     }
 }
