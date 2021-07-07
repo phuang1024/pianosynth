@@ -19,7 +19,20 @@
 
 #include <iostream>
 #include <chrono>
+#include <string>
 #include "progress.hpp"
+
+using std::string;
+using std::to_string;
+
+
+string num_str(const double n) {
+    if      (n < 1e3)  return to_string(n);
+    else if (n < 1e6)  return to_string(n/1e3)  + "K";
+    else if (n < 1e9)  return to_string(n/1e6)  + "M";
+    else if (n < 1e12) return to_string(n/1e9)  + "B";
+    else               return to_string(n/1e12) + "T";
+}
 
 
 namespace Progress {
@@ -35,7 +48,7 @@ namespace Progress {
         const double fac = fps / audio_fps;
 
         std::cout << "\r";
-        std::cout << "frame=" << written << "  fps=" << (int)fps << "  speed=" << fac << "x";
+        std::cout << "frame=" << num_str(written) << "  fps=" << num_str(fps) << "  speed=" << num_str(fac) << "x";
         std::cout << std::flush;
     }
 }
