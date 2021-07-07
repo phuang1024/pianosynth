@@ -32,13 +32,13 @@ public:
     ~Wave();
     Wave(const std::string, const UINT);
 
-    void writeframe(const UINT);
+    void writeframe(const int);
     void close();
 
 private:
     void _write_header();
 
-    std::ofstream* _file;
+    std::ofstream _file;
     UINT _nframes;
 
     UINT _fps;

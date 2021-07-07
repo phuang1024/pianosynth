@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <iostream>
 #include <fstream>
 #include "wave.hpp"
 
@@ -40,42 +41,41 @@ Wave::~Wave() {
 }
 
 Wave::Wave(const std::string fname, const UINT fps) {
-    std::ofstream file(fname);
-
-    _file = &file;
+    _file = std::ofstream(fname);
     _nframes = 0;
 
     _fps = fps;
     _sampwidth = 4;
     _nchannels = 1;
 
-    _file->seekp(40, std::ios::beg);
+    _file.seekp(40, std::ios::beg);
 }
 
-void Wave::writeframe(const UINT samp) {
+void Wave::writeframe(const int samp) {
     const char* ptr = (char*)&samp;
-    _file->write(ptr, _sampwidth);
+    _file.write(ptr, _sampwidth);
     _nframes++;
 }
 
 void Wave::close() {
     _write_header();
-    _file->close();
+    _file.flush();
+    _file.close();
 }
 
 void Wave::_write_header() {
-    _file->seekp(0, std::ios::beg);
+    _file.seekp(0, std::ios::beg);
 
-    write_str(_file, "RIFF", 4);
-    write_uint(_file, 36 + _nframes*_nchannels*_sampwidth);
-    write_str(_file, "WAVE", 4);
-    write_str(_file, "fmt ", 4);
-    write_uint(_file, 16);
-    write_ushort(_file, 1);
-    write_ushort(_file, _nchannels);
-    write_uint(_file, _fps);
-    write_uint(_file, _nchannels*_fps*_sampwidth);
-    write_ushort(_file, _nchannels*_sampwidth);
-    write_ushort(_file, _sampwidth*8);
-    write_str(_file, "data", 4);
+    write_str(&_file, "RIFF", 4);
+    write_uint(&_file, 36 + _nframes*_nchannels*_sampwidth);
+    write_str(&_file, "WAVE", 4);
+    write_str(&_file, "fmt ", 4);
+    write_uint(&_file, 16);
+    write_ushort(&_file, 1);
+    write_ushort(&_file, _nchannels);
+    write_uint(&_file, _fps);
+    write_uint(&_file, _nchannels*_fps*_sampwidth);
+    write_ushort(&_file, _nchannels*_sampwidth);
+    write_ushort(&_file, _sampwidth*8);
+    write_str(&_file, "data", 4);
 }
