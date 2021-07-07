@@ -21,13 +21,30 @@
 #include "wave.hpp"
 
 
+void write_uint(std::ofstream* stream, const UINT v) {
+    stream->write((char*)&v, sizeof(UINT));
+}
+
+void write_ushort(std::ofstream* stream, const USHORT v) {
+    stream->write((char*)&v, sizeof(USHORT));
+}
+
+void write_str(std::ofstream* stream, const char* str, const UINT len) {
+    stream->write(str, len);
+}
+
+
 Wave::~Wave() {
 }
 
-Wave::Wave(const std::string fname) {
+Wave::Wave(const std::string fname, const UINT fps) {
     std::ofstream file(fname);
     _file = &file;
-    _frames_written = 0;
+    _nframes = 0;
+
+    _fps = fps;
+    _sampwidth = 4;
+    _nchannels = 1;
 }
 
 void Wave::close() {
@@ -36,5 +53,16 @@ void Wave::close() {
 }
 
 void Wave::_write_header() {
-    _file->write("RIFF", 4);
+    write_str(_file, "RIFF", 4);
+    write_uint(_file, 36 + _nframes*_nchannels*_sampwidth);
+    write_str(_file, "WAVE", 4);
+    write_str(_file, "fmt ", 4);
+    write_uint(_file, 16);
+    write_ushort(_file, 1);
+    write_ushort(_file, _nchannels);
+    write_uint(_file, _fps);
+    write_uint(_file, _nchannels*_fps*_sampwidth);
+    write_ushort(_file, _nchannels*_sampwidth);
+    write_ushort(_file, _sampwidth*8);
+    write_str(_file, "data", 4);
 }
