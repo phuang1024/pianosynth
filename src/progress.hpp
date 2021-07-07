@@ -28,5 +28,5 @@ typedef  unsigned int   UINT;
 
 namespace Progress {
     double time();
-    void log(std::ostream, const double, const UINT, const UINT);
+    void log(const double, const UINT, const UINT);
 }

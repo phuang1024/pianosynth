@@ -25,6 +25,7 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include "progress.hpp"
 #include "wave.hpp"
 
 using std::cin;
@@ -59,6 +60,7 @@ void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UIN
         const double tuning, const double volume) {
     const double pitch_lowest = tuning / 16;
     const double vol_fac = pow(0.5, 1.0/fps);
+    const double start = Progress::time();
 
     UINT next_msg = 0;
     UINT starts[88];
@@ -67,6 +69,8 @@ void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UIN
         velocities[i] = 0;
 
     UINT frame = 0;
+    double last_log = 0;
+
     while (true) {
         if (next_msg < num_msgs) {
             if (frame >= msgs[next_msg].frame) {
@@ -91,6 +95,12 @@ void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UIN
         const int samp = value*volume*INT_MAX;
         wave.writeframe(samp);
 
+        const double time = Progress::time();
+        if (time >= last_log+0.5) {
+            Progress::log(start, fps, frame);
+            last_log = time;
+        }
+
         // for (double& vel: velocities) {
         //     vel = vel*vol_fac;
         //     if (vel < VEL_THRES) vel = 0;
@@ -112,10 +122,13 @@ void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UIN
     }
 
     wave.close();
+    cout << std::endl;
 }
 
 
 int main(const int argc, const char** argv) {
+    cout << std::fixed;
+
     const std::string fname = argv[1];
     const UINT fps = std::stoi(argv[2]);
     const double tuning = std::stod(argv[3]);

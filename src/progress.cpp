@@ -29,13 +29,13 @@ namespace Progress {
         return elapse/1000;
     }
 
-    void log(std::ostream stream, const double start, const UINT audio_fps, const UINT written) {
+    void log(const double start, const UINT audio_fps, const UINT written) {
         const double elapse = time() - start;
         const double fps = (double)written / elapse;
         const double fac = fps / audio_fps;
 
-        stream << "\r";
-        stream << "frame=" << written << "  fps=" << fps << "  speed=" << fac << "x";
-        stream << std::flush;
+        std::cout << "\r";
+        std::cout << "frame=" << written << "  fps=" << (int)fps << "  speed=" << fac << "x";
+        std::cout << std::flush;
     }
 }
