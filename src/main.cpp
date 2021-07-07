@@ -25,6 +25,7 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include "synth.hpp"
 #include "progress.hpp"
 #include "wave.hpp"
 
@@ -81,17 +82,7 @@ void write_audio(Wave& wave, const Message* msgs, const UINT num_msgs, const UIN
             }
         }
 
-        double value = 0;
-        for (UINT i = 0; i < 88; i++) {
-            const double vel = velocities[i];
-            if (vel > 0) {
-                const double elapse = frame - starts[i];
-                const double pitch = pitch_lowest * pow(2, (double)i/12);
-                const double fpc = (double)fps / pitch;   // Frames per sine cycle
-                const double offset = fmod(elapse, fpc) / fpc;
-                value += sin(offset*pi*2) * vel / 128;
-            }
-        }
+        const double value = Synth::sine(velocities, starts, fps, frame, pitch_lowest);
         const int samp = value*volume*INT_MAX;
         wave.writeframe(samp);
 
