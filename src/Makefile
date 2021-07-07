@@ -18,7 +18,7 @@
 #
 
 CXX = g++
-FILES = main.o wave.o
+FILES = main.o progress.o wave.o
 OUTPUT = psynth_cpp
 C_FLAGS = -std=c++17 -Wall -O3 -o $(OUTPUT)
 
